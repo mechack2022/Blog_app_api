@@ -5,6 +5,7 @@ import com.fragile.blog_api.exceptions.ResourceNotFoundException;
 import com.fragile.blog_api.payloads.UserDto;
 import com.fragile.blog_api.repositories.UserRepo;
 import com.fragile.blog_api.services.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,8 @@ public class UserServiceIpm implements UserService {
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    ModelMapper modelMapper;
     @Override
     public UserDto createUser(UserDto userDto) {
         User user = this.userDtoToUser(userDto);
@@ -56,22 +59,22 @@ public class UserServiceIpm implements UserService {
     }
 
     public User userDtoToUser(UserDto userDto) {
-        User user = new User();
-        user.setId(userDto.getId());
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
-        user.setPassword(userDto.getPassword());
-        user.setAbout(userDto.getAbout());
-        return user;
+        //        User user = new User();
+//        user.setId(userDto.getId());
+//        user.setName(userDto.getName());
+//        user.setEmail(userDto.getEmail());
+//        user.setPassword(userDto.getPassword());
+//        user.setAbout(userDto.getAbout());
+        return modelMapper.map(userDto, User.class);
     }
 
     public UserDto userToUserDto(User user) {
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setName(user.getName());
-        userDto.setEmail(user.getEmail());
-        userDto.setPassword(user.getPassword());
-        userDto.setAbout(user.getAbout());
-        return userDto;
+        //        UserDto userDto = new UserDto();
+//        userDto.setId(user.getId());
+//        userDto.setName(user.getName());
+//        userDto.setEmail(user.getEmail());
+//        userDto.setPassword(user.getPassword());
+//        userDto.setAbout(user.getAbout());
+        return modelMapper.map(user, UserDto.class);
     }
 }
