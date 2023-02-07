@@ -3,6 +3,7 @@ package com.fragile.blog_api.controllers;
 import com.fragile.blog_api.payloads.ApiResponse;
 import com.fragile.blog_api.payloads.UserDto;
 import com.fragile.blog_api.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +21,14 @@ public class UserController {
 
     //POST CREATE USER
     @PostMapping("/addUser")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto){
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
        UserDto createdUserDto = userService.createUser(userDto);
        return new ResponseEntity<>(createdUserDto, HttpStatus.CREATED);
     }
 
     //UPDATE USER
     @PutMapping("/{userId}")
-    public ResponseEntity<UserDto> updateUserDto(@RequestBody UserDto userDto, @PathVariable("userId") Integer uid) {
+    public ResponseEntity<UserDto> updateUserDto(@Valid @RequestBody UserDto userDto, @PathVariable("userId") Integer uid) {
       UserDto updatedUser = userService.updateUser(userDto, uid);
       return ResponseEntity.ok(updatedUser);
 
@@ -37,7 +38,7 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable("userId") Integer userId){
         this.userService.deleteUser(userId);
-        return new ResponseEntity<ApiResponse>(new ApiResponse("user deleted successfully", true), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse("user deleted successfully", true), HttpStatus.OK);
     }
  // GET ALL USERS
     @GetMapping("/")
