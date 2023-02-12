@@ -28,4 +28,7 @@ public class UserDto {
 
     @NotEmpty(message = "about can not be null")
     private String about;
+
+
 }
+
