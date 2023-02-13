@@ -1,11 +1,14 @@
 package com.fragile.blog_api.payloads;
 
+import com.fragile.blog_api.entities.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -23,4 +26,6 @@ public class PostDto {
     private CategoryDto category;
 
     private UserDto user;
+
+    private Set<Comment> comments = new HashSet<>();
 }
