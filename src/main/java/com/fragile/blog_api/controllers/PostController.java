@@ -36,7 +36,7 @@ public class PostController {
         this.postService = postService;
 
     }
-
+    // PLEASE CHANGE YOUR DATABASE CONFIGURATION BACK TO jdbc:mysql://localhost:3306/blog_api_db
     @PostMapping("/user/{userId}/category/{categoryId}/posts")
     public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto, @PathVariable Integer userId, @PathVariable Integer categoryId) {
         PostDto createdPost = postService.createPost(postDto, userId, categoryId);

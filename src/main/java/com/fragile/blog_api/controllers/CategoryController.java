@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/api/categories")
 public class CategoryController {
 
-
+    // PLEASE CHANGE YOUR DATABASE CONFIGURATION BACK TO jdbc:mysql://localhost:3306/blog_api_db
     CategoryService categoryService;
 
     @Autowired

@@ -3,6 +3,7 @@ package com.fragile.blog_api.services.implementation;
 import com.fragile.blog_api.entities.User;
 import com.fragile.blog_api.exceptions.ResourceNotFoundException;
 import com.fragile.blog_api.payloads.UserDto;
+import com.fragile.blog_api.payloads.UserResponseDto;
 import com.fragile.blog_api.repositories.UserRepo;
 import com.fragile.blog_api.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -20,14 +21,14 @@ public class UserServiceIpm implements UserService {
     @Autowired
     ModelMapper modelMapper;
     @Override
-    public UserDto createUser(UserDto userDto) {
+    public UserResponseDto createUser(UserDto userDto) {
         User user = this.userDtoToUser(userDto);
         User savedUser = userRepo.save(user);
-        return this.userToUserDto(savedUser);
+        return modelMapper.map(savedUser, UserResponseDto.class);
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto, Integer userId) {
+    public UserResponseDto updateUser(UserDto userDto, Integer userId) {
         User user = userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id ", userId));
 
         user.setName(userDto.getName());
@@ -35,19 +36,19 @@ public class UserServiceIpm implements UserService {
         user.setPassword(userDto.getPassword());
         user.setAbout(userDto.getAbout());
         User savedUser = userRepo.save(user);
-        return this.userToUserDto(savedUser);
+        return modelMapper.map(savedUser, UserResponseDto.class);
     }
 
     @Override
-    public UserDto getUserById(Integer id) {
+    public UserResponseDto getUserById(Integer id) {
         User user = userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", " Id ", id));
-        return userToUserDto(user);
+         return modelMapper.map(user, UserResponseDto.class);
     }
 
     @Override
-    public List<UserDto> getAllUsers() {
+    public List<UserResponseDto> getAllUsers() {
         List<User> users = userRepo.findAll();
-        return users.stream().map(user -> this.userToUserDto(user)).collect(Collectors.toList());
+        return users.stream().map(user -> modelMapper.map(user, UserResponseDto.class)).collect(Collectors.toList());
     }
 
     @Override
@@ -57,22 +58,10 @@ public class UserServiceIpm implements UserService {
     }
 
     public User userDtoToUser(UserDto userDto) {
-        //        User user = new User();
-//        user.setId(userDto.getId());
-//        user.setName(userDto.getName());
-//        user.setEmail(userDto.getEmail());
-//        user.setPassword(userDto.getPassword());
-//        user.setAbout(userDto.getAbout());
         return modelMapper.map(userDto, User.class);
     }
 
     public UserDto userToUserDto(User user) {
-        //        UserDto userDto = new UserDto();
-//        userDto.setId(user.getId());
-//        userDto.setName(user.getName());
-//        userDto.setEmail(user.getEmail());
-//        userDto.setPassword(user.getPassword());
-//        userDto.setAbout(user.getAbout());
         return modelMapper.map(user, UserDto.class);
     }
 }
