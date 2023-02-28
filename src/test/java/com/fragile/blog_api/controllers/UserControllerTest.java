@@ -1,109 +1,159 @@
 package com.fragile.blog_api.controllers;
 
 
-import com.fragile.blog_api.payloads.ApiResponse;
-import com.fragile.blog_api.payloads.UserDto;
-import com.fragile.blog_api.payloads.UserResponseDto;
 import com.fragile.blog_api.services.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.springframework.http.RequestEntity.post;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@WebMvcTest(UserController.class)
 public class UserControllerTest {
 
     @Autowired
-    private UserController userController;
+    private MockMvc mockMvc;
 
     @MockBean
     private UserService userService;
 
     @Test
-    public void testCreateUser() {
+    public void testCreateUser() throws Exception {
         UserDto userDto = new UserDto();
-        userDto.setName("testuser");
-        userDto.setEmail("testuser@example.com");
+        userDto.setName("Test User");
+        userDto.setEmail("test@example.com");
         userDto.setPassword("password123");
-        userDto.setAbout("test about");
+        userDto.setAbout("Test user description");
+        UserResponseDto responseDto = new UserResponseDto();
+        responseDto.setId(1);
+        responseDto.setName("Test User");
+        responseDto.setEmail("test@example.com");
+        responseDto.setAbout("Test user description");
 
-        UserResponseDto createdUserResponseDto = new UserResponseDto();
-        createdUserResponseDto.setId(1);
-        createdUserResponseDto.setName(userDto.getName());
-        createdUserResponseDto.setEmail(userDto.getEmail());
-        createdUserResponseDto.setAbout(userDto.getAbout());
+        given(userService.createUser(userDto)).willReturn(responseDto);
 
-        when(userService.createUser(userDto)).thenReturn(createdUserResponseDto);
-
-        ResponseEntity<UserResponseDto> responseEntity = userController.createUser(userDto);
-
-        verify(userService, times(1)).createUser(userDto);
-        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-        assertEquals(createdUserResponseDto, responseEntity.getBody());
+        mockMvc.perform(post("/api/users/addUser")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(userDto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.name", is("Test User")))
+                .andExpect(jsonPath("$.email", is("test@example.com")))
+                .andExpect(jsonPath("$.about", is("Test user description")));
     }
 
     @Test
-    public void testGetSingleUser() {
-        Integer userId = 1;
-
-        UserResponseDto userResponseDto = new UserResponseDto();
-        userResponseDto.setId(userId);
-        userResponseDto.setName("testuser");
-        userResponseDto.setEmail("testuser@example.com");
-        userResponseDto.setAbout("test about");
-
-        when(userService.getUserById(userId)).thenReturn(userResponseDto);
-
-        ResponseEntity<UserResponseDto> responseEntity = userController.getSingleUser(userId);
-
-        verify(userService, times(1)).getUserById(userId);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(userResponseDto, responseEntity.getBody());
-    }
-
-    @Test
-    public void testUpdateUser() {
-        Integer userId = 1;
-
+    public void testUpdateUser() throws Exception {
         UserDto userDto = new UserDto();
-        userDto.setName("testuser_updated");
-        userDto.setEmail("testuser_updated@example.com");
-        userDto.setPassword("password123_updated");
-        userDto.setAbout("test about_updated");
+        userDto.setName("Updated Test User");
+        userDto.setEmail("updated_test@example.com");
+        userDto.setPassword("password123");
+        userDto.setAbout("Updated test user description");
+        UserResponseDto responseDto = new UserResponseDto();
+        responseDto.setId(1);
+        responseDto.setName("Updated Test User");
+        responseDto.setEmail("updated_test@example.com");
+        responseDto.setAbout("Updated test user description");
 
-        UserResponseDto updatedUserResponseDto = new UserResponseDto();
-        updatedUserResponseDto.setId(userId);
-        updatedUserResponseDto.setName(userDto.getName());
-        updatedUserResponseDto.setEmail(userDto.getEmail());
-        updatedUserResponseDto.setAbout(userDto.getAbout());
+        given(userService.updateUser(userDto, 1)).willReturn(responseDto);
 
-        when(userService.updateUser(userDto, userId)).thenReturn(updatedUserResponseDto);
-
-        ResponseEntity<UserResponseDto> responseEntity = userController.updateUserDto(userDto, userId);
-
-        verify(userService, times(1)).updateUser(userDto, userId);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(updatedUserResponseDto, responseEntity.getBody());
+        mockMvc.perform(put("/api/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(userDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.name", is("Updated Test User")))
+                .andExpect(jsonPath("$.email", is("updated_test@example.com")))
+                .andExpect(jsonPath("$.about", is("Updated test user description")));
     }
 
     @Test
-    public void testDeleteUser() {
-        Integer userId = 1;
+    public void testDeleteUser() throws Exception {
+        ApiResponse response = new ApiResponse("user deleted successfully", true);
 
-        ApiResponse apiResponse = new ApiResponse("user deleted successfully", true);
+        mockMvc.perform(delete("/api/users/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message", is("user deleted successfully")))
+                .andExpect(jsonPath("$.success", is(true)));
+    }
 
-        ResponseEntity<ApiResponse> responseEntity = userController.deleteUser(userId);
+    @Test
+    public void testGetAllUsers() throws Exception {
+        List<UserResponseDto> responseDtos = new ArrayList<>();
+        UserResponseDto user1 = new UserResponseDto();
+        user1.setId(1);
+        user1.setName("Test User 1");
+        user1.setEmail("test1@example.com");
+        user1.setAbout("Test user 1 description");
+        UserResponseDto user2 = new UserResponseDto();
+        user2.setId(2);
+        user2.setName("Test User 2");
+        user2.setEmail("test2@example.com");
+        user2.setAbout("Test user 2 description");
+        responseDtos.add(user1);
+        responseDtos.add(user2);
 
-        verify(userService, times(1)).deleteUser(userId);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(apiResponse, responseEntity.getBody());
+        given(userService.getAllUsers()).willReturn(responseDtos);
+
+        mockMvc.perform(get("/api/users/"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", is(1)))
+                .andExpect(jsonPath("$[0].name", is("Test User 1")))
+                .andExpect(jsonPath("$[0].email", is("test1@example.com")))
+                .andExpect(jsonPath
+
+
+                        // Test getSingleUser method
+                        mockMvc.perform(get("/api/users/1"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.id", is(1)))
+                                .andExpect(jsonPath("$.name", is("Test User 1")))
+                                .andExpect(jsonPath("$.email", is("test1@example.com")))
+                                .andExpect(jsonPath("$.about", is("This is the first test user")));
+
+        // Test createUser method
+        UserDto newUser = new UserDto();
+        newUser.setName("Test User 3");
+        newUser.setEmail("test3@example.com");
+        newUser.setPassword("test123");
+        newUser.setAbout("This is the third test user");
+
+        mockMvc.perform(post("/api/users/addUser")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(newUser)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id", is(3)))
+                .andExpect(jsonPath("$.name", is("Test User 3")))
+                .andExpect(jsonPath("$.email", is("test3@example.com")))
+                .andExpect(jsonPath("$.about", is("This is the third test user")));
+
+        // Test updateUser method
+        UserDto updatedUser = new UserDto();
+        updatedUser.setName("Updated Test User");
+        updatedUser.setEmail("updatedtest1@example.com");
+        updatedUser.setPassword("updatedtest123");
+        updatedUser.setAbout("This is the updated test user");
+
+        mockMvc.perform(put("/api/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedUser)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.name", is("Updated Test User")))
+                .andExpect(jsonPath("$.email", is("updatedtest1@example.com")))
+                .andExpect(jsonPath("$.about", is("This is the updated test user")));
+
+        // Test deleteUser method
+        mockMvc.perform(delete("/api/users/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success", is(true)))
+                .andExpect(jsonPath("$.message", is("user deleted successfully")));
     }
 }
