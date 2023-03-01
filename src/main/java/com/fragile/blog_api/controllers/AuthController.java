@@ -6,9 +6,15 @@ import com.fragile.blog_api.payloads.JwtAuthResponse;
 import com.fragile.blog_api.payloads.UserDto;
 import com.fragile.blog_api.security.JwtTokenHelper;
 import com.fragile.blog_api.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -30,6 +36,27 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/login")
+    @Operation(
+            description = "login service",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "successfully sign in",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(value = "{\"code\": 400, \"status\": \"OK\", \"message\": \"User successfully register\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "bad request",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(value = "{\"code\": 400, \"status\": \"Bad request\", \"message\": \"Bad request\"}")
+                            )
+                    )
+
+            })
     public ResponseEntity<JwtAuthResponse> createToken(@RequestBody JwtAuthRequest request) throws Exception {
 
         this.authenticate(request.getUsername(), request.getPassword());
@@ -53,8 +80,13 @@ public class AuthController {
         }
 
     }
+
     @PostMapping("/register")
-    public ResponseEntity<UserDto> registerUser(@Valid @RequestBody UserDto userDto){
+    @Operation(summary = "Register New User", responses = {
+            @ApiResponse(responseCode = "201",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = UserDto.class)))})
+    public ResponseEntity<UserDto> registerUser(@Valid @RequestBody UserDto userDto) {
         UserDto user = userService.registerNewUser(userDto);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }

@@ -5,9 +5,14 @@ import com.fragile.blog_api.payloads.ApiResponse;
 import com.fragile.blog_api.payloads.UserDto;
 import com.fragile.blog_api.payloads.UserResponseDto;
 import com.fragile.blog_api.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +46,12 @@ public class UserController {
     }
     //DELETE USER
     @DeleteMapping("/{userId}")
+    @Operation(summary = "delete user",
+            security = {@SecurityRequirement(name = "bearer-token")},
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ApiResponse.class)))})
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable("userId") Integer userId){
         this.userService.deleteUser(userId);
         return new ResponseEntity<>(new ApiResponse("user deleted successfully", true), HttpStatus.OK);
