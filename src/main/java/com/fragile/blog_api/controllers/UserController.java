@@ -3,6 +3,7 @@ package com.fragile.blog_api.controllers;
 import com.fragile.blog_api.entities.User;
 import com.fragile.blog_api.payloads.ApiResponse;
 import com.fragile.blog_api.payloads.UserDto;
+import com.fragile.blog_api.payloads.UserResponseDto;
 import com.fragile.blog_api.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +19,14 @@ import java.util.Map;
 @RequestMapping("/api/users")
 public class UserController {
 
+    // PLEASE CHANGE YOUR DATABASE CONFIGURATION BACK TO jdbc:mysql://localhost:3306/blog_api_db
     @Autowired
      private UserService userService;
 
     //POST CREATE USER
     @PostMapping("/addUser")
-    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
-       UserDto createdUserDto = userService.createUser(userDto);
+    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserDto userDto){
+       UserResponseDto createdUserDto = userService.createUser(userDto);
        return new ResponseEntity<>(createdUserDto, HttpStatus.CREATED);
     }
 
@@ -32,8 +34,8 @@ public class UserController {
     //UPDATE USER
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{userId}")
-    public ResponseEntity<UserDto> updateUserDto(@Valid @RequestBody UserDto userDto, @PathVariable("userId") Integer uid) {
-      UserDto updatedUser = userService.updateUser(userDto, uid);
+    public ResponseEntity<UserResponseDto> updateUserDto(@Valid @RequestBody UserDto userDto, @PathVariable("userId") Integer uid) {
+        UserResponseDto updatedUser = userService.updateUser(userDto, uid);
       return ResponseEntity.ok(updatedUser);
 
     }
@@ -45,13 +47,13 @@ public class UserController {
     }
  // GET ALL USERS
     @GetMapping("/")
-    public ResponseEntity<List<UserDto>> getAllUsers(){
+    public ResponseEntity<List<UserResponseDto>> getAllUsers(){
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     //GET SINGLE USER
     @GetMapping("/{userId}")
-    public  ResponseEntity<UserDto> getSingleUser(@PathVariable("userId") Integer uid){
+    public  ResponseEntity<UserResponseDto> getSingleUser(@PathVariable("userId") Integer uid){
         return ResponseEntity.ok(userService.getUserById(uid));
     }
 

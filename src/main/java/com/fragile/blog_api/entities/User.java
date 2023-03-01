@@ -1,6 +1,7 @@
 package com.fragile.blog_api.entities;
 
 import jakarta.persistence.*;
+<<<<<<< HEAD
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,18 +10,23 @@ import com.fragile.blog_api.entities.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+=======
+import lombok.*;
+>>>>>>> origin/main
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Setter
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
 
+    // PLEASE CHANGE YOUR DATABASE CONFIGURATION BACK TO jdbc:mysql://localhost:3306/blog_api_db
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -35,7 +41,11 @@ public class User implements UserDetails {
 
     private String about;
 
+<<<<<<< HEAD
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+=======
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+>>>>>>> origin/main
     private List<Post> posts = new ArrayList<Post>();
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -45,6 +55,7 @@ public class User implements UserDetails {
     private Set<Role> roles = new HashSet<>();
 
 
+<<<<<<< HEAD
 //    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities  = roles.stream().map(role ->
@@ -81,4 +92,7 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+=======
+
+>>>>>>> origin/main
 }

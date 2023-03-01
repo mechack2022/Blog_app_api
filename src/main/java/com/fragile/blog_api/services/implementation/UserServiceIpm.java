@@ -5,7 +5,11 @@ import com.fragile.blog_api.entities.Role;
 import com.fragile.blog_api.entities.User;
 import com.fragile.blog_api.exceptions.ResourceNotFoundException;
 import com.fragile.blog_api.payloads.UserDto;
+<<<<<<< HEAD
 import com.fragile.blog_api.repositories.RoleRepo;
+=======
+import com.fragile.blog_api.payloads.UserResponseDto;
+>>>>>>> origin/main
 import com.fragile.blog_api.repositories.UserRepo;
 import com.fragile.blog_api.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -41,14 +45,14 @@ public class UserServiceIpm implements UserService {
     }
 
     @Override
-    public UserDto createUser(UserDto userDto) {
+    public UserResponseDto createUser(UserDto userDto) {
         User user = this.userDtoToUser(userDto);
         User savedUser = userRepo.save(user);
-        return this.userToUserDto(savedUser);
+        return modelMapper.map(savedUser, UserResponseDto.class);
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto, Integer userId) {
+    public UserResponseDto updateUser(UserDto userDto, Integer userId) {
         User user = userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id ", userId));
 
         user.setName(userDto.getName());
@@ -56,19 +60,19 @@ public class UserServiceIpm implements UserService {
         user.setPassword(userDto.getPassword());
         user.setAbout(userDto.getAbout());
         User savedUser = userRepo.save(user);
-        return this.userToUserDto(savedUser);
+        return modelMapper.map(savedUser, UserResponseDto.class);
     }
 
     @Override
-    public UserDto getUserById(Integer id) {
+    public UserResponseDto getUserById(Integer id) {
         User user = userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", " Id ", id));
-        return userToUserDto(user);
+         return modelMapper.map(user, UserResponseDto.class);
     }
 
     @Override
-    public List<UserDto> getAllUsers() {
+    public List<UserResponseDto> getAllUsers() {
         List<User> users = userRepo.findAll();
-        return users.stream().map(user -> this.userToUserDto(user)).collect(Collectors.toList());
+        return users.stream().map(user -> modelMapper.map(user, UserResponseDto.class)).collect(Collectors.toList());
     }
 
     @Override
