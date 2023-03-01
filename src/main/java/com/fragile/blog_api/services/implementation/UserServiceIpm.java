@@ -1,25 +1,49 @@
 package com.fragile.blog_api.services.implementation;
 
+import com.fragile.blog_api.config.AppConstant;
+import com.fragile.blog_api.entities.Role;
 import com.fragile.blog_api.entities.User;
 import com.fragile.blog_api.exceptions.ResourceNotFoundException;
 import com.fragile.blog_api.payloads.UserDto;
+<<<<<<< HEAD
+import com.fragile.blog_api.repositories.RoleRepo;
+=======
 import com.fragile.blog_api.payloads.UserResponseDto;
+>>>>>>> origin/main
 import com.fragile.blog_api.repositories.UserRepo;
 import com.fragile.blog_api.services.UserService;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceIpm implements UserService {
-    @Autowired
-    private UserRepo userRepo;
 
-    @Autowired
-    ModelMapper modelMapper;
+    private final UserRepo userRepo;
+    private final ModelMapper modelMapper;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private final RoleRepo roleRepo;
+
+    @Override
+    public UserDto registerNewUser(UserDto userDto) {
+        User user = modelMapper.map(userDto, User.class);
+        // encode the password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        //ROLE
+        Role role = roleRepo.findById(AppConstant.NORMAL_USER).get();
+        user.getRoles().add(role);
+        User registerUser = userRepo.save(user);
+        return modelMapper.map(registerUser, UserDto.class);
+    }
+
     @Override
     public UserResponseDto createUser(UserDto userDto) {
         User user = this.userDtoToUser(userDto);

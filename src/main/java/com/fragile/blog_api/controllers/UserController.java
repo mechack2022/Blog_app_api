@@ -1,5 +1,6 @@
 package com.fragile.blog_api.controllers;
 
+import com.fragile.blog_api.entities.User;
 import com.fragile.blog_api.payloads.ApiResponse;
 import com.fragile.blog_api.payloads.UserDto;
 import com.fragile.blog_api.payloads.UserResponseDto;
@@ -8,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,14 +30,15 @@ public class UserController {
        return new ResponseEntity<>(createdUserDto, HttpStatus.CREATED);
     }
 
+
     //UPDATE USER
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{userId}")
     public ResponseEntity<UserResponseDto> updateUserDto(@Valid @RequestBody UserDto userDto, @PathVariable("userId") Integer uid) {
         UserResponseDto updatedUser = userService.updateUser(userDto, uid);
       return ResponseEntity.ok(updatedUser);
 
     }
-
     //DELETE USER
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable("userId") Integer userId){
