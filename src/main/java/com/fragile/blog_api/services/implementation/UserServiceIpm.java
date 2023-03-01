@@ -5,11 +5,8 @@ import com.fragile.blog_api.entities.Role;
 import com.fragile.blog_api.entities.User;
 import com.fragile.blog_api.exceptions.ResourceNotFoundException;
 import com.fragile.blog_api.payloads.UserDto;
-<<<<<<< HEAD
 import com.fragile.blog_api.repositories.RoleRepo;
-=======
 import com.fragile.blog_api.payloads.UserResponseDto;
->>>>>>> origin/main
 import com.fragile.blog_api.repositories.UserRepo;
 import com.fragile.blog_api.services.UserService;
 import lombok.RequiredArgsConstructor;

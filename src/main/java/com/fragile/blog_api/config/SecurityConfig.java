@@ -41,6 +41,14 @@ public class SecurityConfig  {
                 .disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/api/v1/auth/**").permitAll().requestMatchers(HttpMethod.GET).permitAll()
+                .requestMatchers(
+                        "/h2-console/**",
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-resources/**",
+                        "/swagger-ui.html",
+                        "/webjars/**"
+                ).permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -90,7 +98,6 @@ public class SecurityConfig  {
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
-
 
     /*
 

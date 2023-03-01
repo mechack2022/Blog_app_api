@@ -8,12 +8,9 @@ import java.util.List;
 
 public interface UserService {
 
-<<<<<<< HEAD
+
     UserDto  registerNewUser(UserDto user);
-    UserDto createUser(UserDto user);
-=======
     UserResponseDto createUser(UserDto user);
->>>>>>> origin/main
 
     UserResponseDto updateUser(UserDto user, Integer id);
 
