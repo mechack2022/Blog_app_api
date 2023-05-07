@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface PostService {
 
-    PostDto createPost(PostDto postDto, Integer userId , Integer categoryId );
+    PostDto createPost(PostDto postDto, Integer userId, Integer categoryId);
 
     PostDto updatePost(PostDto postDto, Integer postId);
 
@@ -17,15 +17,14 @@ public interface PostService {
 
     void deletePost(Integer postId);
 
-  PostResponse getAllPosts(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
+    PostResponse getAllPosts(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 
-//    get all post by category
+    //    get all post by category
     List<PostDto> getAllPostsByCategory(Integer categoryId);
 
     List<PostDto> getAllPostsByUser(Integer userId);
 
     List<PostDto> searchPost(String keyword);
-
 
 
 }

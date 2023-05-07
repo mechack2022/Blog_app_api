@@ -33,6 +33,7 @@ public class SecurityConfig  {
 
     private final JwtAuthenticationEntryPoint JwtAuthenticationEntryPoint;
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -47,7 +48,8 @@ public class SecurityConfig  {
                         "/swagger-ui/**",
                         "/swagger-resources/**",
                         "/swagger-ui.html",
-                        "/webjars/**"
+                        "/webjars/**",
+                        "/api/mail/**"
                 ).permitAll()
                 .anyRequest()
                 .authenticated()
@@ -62,7 +64,6 @@ public class SecurityConfig  {
 
         return http.build();
     }
-
 
  /*
     @Override

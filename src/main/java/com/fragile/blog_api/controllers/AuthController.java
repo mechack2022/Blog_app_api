@@ -1,5 +1,6 @@
 package com.fragile.blog_api.controllers;
 
+import com.fragile.blog_api.event.UserCreationEvent;
 import com.fragile.blog_api.exceptions.ApiException;
 import com.fragile.blog_api.payloads.JwtAuthRequest;
 import com.fragile.blog_api.payloads.JwtAuthResponse;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,8 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
     private final UserService userService;
+
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @PostMapping("/login")
     @Operation(
@@ -88,6 +92,7 @@ public class AuthController {
                             schema = @Schema(implementation = UserDto.class)))})
     public ResponseEntity<UserDto> registerUser(@Valid @RequestBody UserDto userDto) {
         UserDto user = userService.registerNewUser(userDto);
+        applicationEventPublisher.publishEvent(new UserCreationEvent(userDto, "user successfully registered"));
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 

@@ -1,14 +1,17 @@
 package com.fragile.blog_api.controllers;
 
 import com.fragile.blog_api.config.AppConstant;
+import com.fragile.blog_api.event.PostCreationEvent;
 import com.fragile.blog_api.payloads.ApiResponse;
 import com.fragile.blog_api.payloads.PostDto;
 import com.fragile.blog_api.payloads.PostResponse;
 import com.fragile.blog_api.services.FileService;
 import com.fragile.blog_api.services.PostService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,25 +24,29 @@ import java.io.InputStream;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/")
 public class PostController {
 
     private final PostService postService;
     @Autowired
-    private FileService fileService;
+    private final FileService fileService;
+
+    private final ApplicationEventPublisher applicationEventPublisher;
 
 
     @Value("${project.image}")
     private String path;
 
-    public PostController(PostService postService) {
-        this.postService = postService;
-
-    }
+//    public PostController(PostService postService) {
+//        this.postService = postService;
+//
+//    }
     // PLEASE CHANGE YOUR DATABASE CONFIGURATION BACK TO jdbc:mysql://localhost:3306/blog_api_db
     @PostMapping("/user/{userId}/category/{categoryId}/posts")
     public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto, @PathVariable Integer userId, @PathVariable Integer categoryId) {
         PostDto createdPost = postService.createPost(postDto, userId, categoryId);
+        applicationEventPublisher.publishEvent(new PostCreationEvent(postDto , userId));
         return new ResponseEntity<PostDto>(createdPost, HttpStatus.CREATED);
     }
 

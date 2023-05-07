@@ -49,10 +49,7 @@ public class JwtTokenHelper {
 //                .compact();
 //    }
 
-    public String doGenerateToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails
-    ) {
+    public String doGenerateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
