@@ -41,7 +41,9 @@ public class SecurityConfig  {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/v1/auth/**").permitAll().requestMatchers(HttpMethod.GET).permitAll()
+                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/mail/**").permitAll()
+                .requestMatchers(HttpMethod.GET).permitAll()
                 .requestMatchers(
                         "/h2-console/**",
                         "/v3/api-docs/**",
